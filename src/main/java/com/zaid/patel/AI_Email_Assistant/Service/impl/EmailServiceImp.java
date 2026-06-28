@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.List;
 import java.util.Map;
 @Service
 public class EmailServiceImp implements EmailService {
@@ -18,6 +19,9 @@ public class EmailServiceImp implements EmailService {
 
     @Value("${hf.api.url}")
     private String hfApiUrl;
+
+    @Value("${hf.model}")
+    private String hfModel;
 
     @Value("${hf.api.token}")
     private String hfApiToken;
@@ -31,15 +35,13 @@ public class EmailServiceImp implements EmailService {
     public ResponseEntity<String> EmailGenerator(EmailReqDto emailReqDto) {
         String prompt = buildPrompt(emailReqDto);
         Map<String, Object> requestBody = Map.of(
-                "inputs", prompt,
-                "parameters", Map.of(
-                        "max_new_tokens", 500,
-                        "temperature", 0.7,
-                        "do_sample", true
+                "model", hfModel,
+                "messages", List.of(
+                        Map.of("role", "user", "content", prompt)
                 )
         );
         String response = webClient.post()
-                .uri(hfApiUrl)
+                .uri(hfApiUrl + "/chat/completions")
                 .header("Authorization", "Bearer " + hfApiToken)
                 .header("Content-Type", "application/json")
                 .bodyValue(requestBody)
@@ -53,7 +55,11 @@ public class EmailServiceImp implements EmailService {
         try{
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(response);
-            String text = rootNode.get(0).path("generated_text").asText();
+            String text = rootNode.path("choices")
+                    .get(0)
+                    .path("message")
+                    .path("content")
+                    .asText();
             return ResponseEntity.ok(text);
 
         } catch (Exception e) {
