@@ -1,6 +1,6 @@
 # Smart Email Reply Assistant
 
-An AI-powered email assistant that generates contextual, professional replies using Google's Gemini API. Designed to improve communication efficiency, this tool automates email responses with options to customize tone and style directly within a web app or Gmail extension.
+An AI-powered email assistant that generates contextual, professional replies using Hugging Face Inference API (Qwen/Qwen3-0.6B). Designed to improve communication efficiency, this tool automates email responses with options to customize tone and style directly within a web app or Gmail extension.
 
 ---
 
@@ -21,7 +21,7 @@ An AI-powered email assistant that generates contextual, professional replies us
 |--------------|---------------------------------------|
 | Frontend     | React.js, HTML, CSS                   |
 | Backend      | Java, Spring Boot                     |
-| AI API       | Gemini API (Google AI)                |
+| AI API       | Hugging Face Inference API (Qwen/Qwen3-0.6B) |
 | Extension    | JavaScript (Gmail DOM manipulation)   |
 | Tools        | Git, GitHub, REST APIs, VS Code       |
 
@@ -41,7 +41,7 @@ An AI-powered email assistant that generates contextual, professional replies us
 
 2. **Backend**
     - Accepts email content, raw reply, and tone/style preference via REST API
-    - Processes the request and communicates with the Gemini API
+    - Processes the request and communicates with the Hugging Face Inference API
     - Returns a generated response based on the given context and tone
 
 3. **Browser Extension**

@@ -10,19 +10,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.lang.runtime.ObjectMethods;
-import java.util.List;
 import java.util.Map;
 @Service
 public class EmailServiceImp implements EmailService {
 
     private final WebClient webClient;
 
-    @Value("${gemini.api.url}")
-    private String geminiApiUrl;
+    @Value("${hf.api.url}")
+    private String hfApiUrl;
 
-    @Value("${gemini.api.key}")
-    private String geminiApiKey;
+    @Value("${hf.api.token}")
+    private String hfApiToken;
 
     public EmailServiceImp(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();
@@ -31,19 +29,18 @@ public class EmailServiceImp implements EmailService {
 
     @Override
     public ResponseEntity<String> EmailGenerator(EmailReqDto emailReqDto) {
-        // Build Prompt
         String prompt = buildPrompt(emailReqDto);
-        // Crafting like thr API demands
         Map<String, Object> requestBody = Map.of(
-                "contents", List.of(
-                        Map.of("parts", List.of(
-                                Map.of("text", prompt)
-                        ))
+                "inputs", prompt,
+                "parameters", Map.of(
+                        "max_new_tokens", 500,
+                        "temperature", 0.7,
+                        "do_sample", true
                 )
         );
-        // DO request and get request
         String response = webClient.post()
-                .uri(geminiApiUrl + "?key=" + geminiApiKey)
+                .uri(hfApiUrl)
+                .header("Authorization", "Bearer " + hfApiToken)
                 .header("Content-Type", "application/json")
                 .bodyValue(requestBody)
                 .retrieve()
@@ -56,13 +53,7 @@ public class EmailServiceImp implements EmailService {
         try{
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(response);
-            String text =  rootNode.path("candidates")
-                    .get(0)
-                    .path("content")
-                    .path("parts")
-                    .get(0)
-                    .path("text")
-                    .asText();
+            String text = rootNode.get(0).path("generated_text").asText();
             return ResponseEntity.ok(text);
 
         } catch (Exception e) {
