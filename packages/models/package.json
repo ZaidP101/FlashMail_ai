@@ -1,0 +1,11 @@
+{
+  "name": "@flashmail/models",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.js",
+  "dependencies": {
+    "@flashmail/configs": "workspace:^",
+    "@supabase/supabase-js": "^2.49.4"
+  }
+}
