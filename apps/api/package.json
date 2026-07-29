@@ -1,0 +1,21 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --env-file=../../.env --watch src/server.js",
+    "start": "bun --env-file=../../.env src/server.js"
+  },
+  "dependencies": {
+    "@flashmail/configs": "workspace:^",
+    "@flashmail/models": "workspace:^",
+    "@flashmail/schemas": "workspace:^",
+    "@flashmail/utils": "workspace:^",
+    "@supabase/supabase-js": "^2.49.4",
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "zod": "^4.3.6"
+  }
+}
