@@ -1,0 +1,25 @@
+{
+  "name": "flashmail",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FlashMail.ai — AI-powered email reply assistant",
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "dev:api": "turbo dev --filter=api",
+    "dev:admin": "turbo dev --filter=admin",
+    "lint": "turbo lint",
+    "format": "prettier --write .",
+    "clean": "rm -rf apps/*/node_modules packages/*/node_modules node_modules"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "prettier": "^3.8.1",
+    "turbo": "^2.10.0",
+    "typescript": "^5.8.3"
+  },
+  "packageManager": "bun@1.4.0"
+}
