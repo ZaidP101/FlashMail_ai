@@ -1,0 +1,20 @@
+.ai-reply-button.generating {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.tone-selector {
+  margin-right: 8px;
+  padding: 4px 8px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 13px;
+  color: #3c4043;
+  cursor: pointer;
+}
+
+.tone-selector:focus {
+  outline: none;
+  border-color: #1a73e8;
+}
