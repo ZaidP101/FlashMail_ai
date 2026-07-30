@@ -1,14 +1,17 @@
 export function buildEmailPrompt(emailContent, tone, rawReply) {
-  let prompt = `Generate a professional email reply for the following email:\n\n${emailContent}\n\n`
+  let prompt = 'Generate a professional email reply using the provided context and raw reply.'
 
   if (tone) {
-    prompt += `Use a ${tone.toLowerCase()} tone.\n\n`
+    prompt += ` Use a ${tone} tone.`
   }
 
-  if (rawReply) {
-    prompt += `Here are some key points to include: ${rawReply}\n\n`
-  }
+  prompt += `\n\nOriginal Email:\n${emailContent}`
 
-  prompt += 'Generated Reply:'
+  prompt += `\n\nRaw Reply:\n${rawReply || ''}`
+
+  prompt += '\n\nInstructions:\n'
+  prompt += '- Use the Raw Reply to generate a polished and professional response.\n'
+  prompt += '- Do not include any explanations or commentary, only the improved reply.\n'
+
   return prompt
 }
