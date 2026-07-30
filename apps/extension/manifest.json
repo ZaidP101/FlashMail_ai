@@ -4,10 +4,7 @@
   "version": "2.0",
   "manifest_version": 3,
   "permissions": ["storage", "activeTab"],
-  "host_permissions": [
-    "http://localhost:8080/*",
-    "*://mail.google.com/*"
-  ],
+  "host_permissions": ["*://mail.google.com/*", "http://localhost:*/*", "https://*/*"],
   "content_scripts": [
     {
       "js": ["content.js"],
@@ -22,7 +19,16 @@
       "matches": ["*://mail.google.com/*"]
     }
   ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "48": "icons/icon.svg",
+    "128": "icons/icon.svg"
+  },
   "action": {
-    "default_title": "FlashMail.ai"
+    "default_title": "FlashMail.ai",
+    "default_icon": "icons/icon.svg"
   }
 }
