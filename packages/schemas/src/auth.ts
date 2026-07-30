@@ -10,3 +10,11 @@ export const LoginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 })
+
+export const AuthResponseSchema = z.object({
+  accessToken: z.string(),
+  tokenType: z.string(),
+  email: z.string(),
+  name: z.string().nullable(),
+  userId: z.string(),
+})

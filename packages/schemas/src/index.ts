@@ -1,3 +1,3 @@
 export { EmailReqSchema, EmailResSchema } from './email.js'
-export { SignUpSchema, LoginSchema } from './auth.js'
+export { SignUpSchema, LoginSchema, AuthResponseSchema } from './auth.js'
 export { UserSchema } from './user.js'

@@ -6,7 +6,7 @@ export async function signup(req, res, next) {
     const result = await authService.signup(email, password, name)
     res.status(201).json(result)
   } catch (err) {
-    next(err)
+    res.status(400).json({ error: err.message })
   }
 }
 
@@ -16,15 +16,15 @@ export async function login(req, res, next) {
     const result = await authService.login(email, password)
     res.json(result)
   } catch (err) {
-    next(err)
+    res.status(401).json({ error: err.message })
   }
 }
 
 export async function profile(req, res, next) {
   try {
-    const user = await authService.getProfile(req.user.id)
-    res.json({ user })
+    const user = await authService.getProfile(req.accessToken)
+    res.json(user)
   } catch (err) {
-    next(err)
+    res.status(401).json({ error: err.message })
   }
 }
