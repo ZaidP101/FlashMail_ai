@@ -1,22 +1,61 @@
 import type { z } from 'zod'
-import type { EmailReqSchema, EmailResSchema } from '@flashmail/schemas'
+import type { EmailReqSchema, EmailResSchema, FormatSchema } from '@flashmail/schemas'
 
 type EmailReq = z.input<typeof EmailReqSchema>
 type EmailRes = z.input<typeof EmailResSchema>
 
-export async function generateEmail(data: EmailReq, token?: string): Promise<EmailRes> {
+type Format = z.output<typeof FormatSchema>
+type FormatInput = {
+  name: string
+  mode: 'email' | 'reply'
+  tone: string
+  content: string
+}
+
+async function api<T>(path: string, token: string | undefined, init?: RequestInit): Promise<T> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' }
   if (token) headers['Authorization'] = `Bearer ${token}`
 
-  const res = await fetch('/api/email/generate', {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(data),
-  })
+  const res = await fetch(path, { ...init, headers })
   if (!res.ok) {
     const err = await res.text()
-    throw new Error(err || 'Failed to generate email')
+    throw new Error(err || `Request failed: ${res.status}`)
   }
-  const text = await res.text()
-  return { reply: text }
+  if (res.status === 204) return undefined as T
+  return res.json() as Promise<T>
+}
+
+export async function generateEmail(data: EmailReq, token?: string): Promise<EmailRes> {
+  const res = await api<{ reply: string }>('/api/email/generate', token, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return { reply: res.reply }
+}
+
+export async function getFormats(token: string | undefined): Promise<Format[]> {
+  const res = await api<{ formats: Format[] }>('/api/formats', token)
+  return res.formats
+}
+
+export async function getFormat(id: string, token: string | undefined): Promise<Format> {
+  return api<Format>(`/api/formats/${id}`, token)
+}
+
+export async function createFormat(data: FormatInput, token: string | undefined): Promise<Format> {
+  return api<Format>('/api/formats', token, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function updateFormat(id: string, data: Partial<FormatInput>, token: string | undefined): Promise<Format> {
+  return api<Format>(`/api/formats/${id}`, token, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function deleteFormat(id: string, token: string | undefined): Promise<void> {
+  await api<void>(`/api/formats/${id}`, token, { method: 'DELETE' })
 }

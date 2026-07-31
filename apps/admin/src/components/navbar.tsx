@@ -24,6 +24,9 @@ export function Navbar() {
           <Link href="/generate" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Generate
           </Link>
+          <Link href="/formats" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Formats
+          </Link>
           <Link href="/profile" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Profile
           </Link>
