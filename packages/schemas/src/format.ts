@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 const MAX_CONTENT_WORDS = 500
 
-const wordCount = (value) => value.trim().split(/\s+/).filter(Boolean).length
+const wordCount = (value: string): number => value.trim().split(/\s+/).filter(Boolean).length
 
 export const FormatContentSchema = z
   .string()
