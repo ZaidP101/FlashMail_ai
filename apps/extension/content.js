@@ -63,6 +63,31 @@ function findComposeToolBar() {
   return null
 }
 
+function getComposeBox() {
+  return document.querySelector('[role="textbox"][g_editable="true"]')
+}
+
+function insertReply(reply) {
+  const composeBox = getComposeBox()
+  if (!composeBox) return false
+  composeBox.innerText = ''
+  composeBox.focus()
+  document.execCommand('insertText', false, reply)
+  return true
+}
+
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.type === 'insert-reply') {
+    const inserted = insertReply(message.reply)
+    sendResponse({ ok: inserted })
+    return
+  }
+  if (message.type === 'get-email-content') {
+    sendResponse({ ok: true, content: getEmailContent() })
+    return
+  }
+})
+
 async function injectButton() {
   const existingButton = document.querySelector('.ai-reply-button')
   if (existingButton) existingButton.remove()
@@ -102,13 +127,7 @@ async function injectButton() {
       if (!response.ok) throw new Error('API request failed')
 
       const reply = await response.text()
-
-      const composeBox = document.querySelector('[role="textbox"][g_editable="true"]')
-      if (composeBox) {
-        composeBox.innerText = ''
-        composeBox.focus()
-        document.execCommand('insertText', false, reply)
-      }
+      insertReply(reply)
     } catch (error) {
       console.error(error)
       alert(`Failed to generate reply: ${error.message}`)

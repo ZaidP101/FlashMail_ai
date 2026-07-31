@@ -3,8 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <title>FlashMail.ai</title>
+  <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <p>FlashMail.ai popup coming soon.</p>
+  <div id="view-loading" class="view">
+    <div class="spinner"></div>
+    <p class="muted">Checking session…</p>
+  </div>
+
+  <div id="view-login" class="view hidden">
+    <h1>FlashMail.ai</h1>
+    <p class="muted">Sign in to generate replies from your saved formats.</p>
+    <form id="login-form">
+      <label for="login-email">Email</label>
+      <input id="login-email" type="email" autocomplete="username" required>
+      <label for="login-password">Password</label>
+      <input id="login-password" type="password" autocomplete="current-password" required>
+      <p id="login-error" class="error hidden"></p>
+      <button type="submit" id="login-submit" class="primary">Sign in</button>
+    </form>
+  </div>
+
+  <div id="view-main" class="view hidden">
+    <header class="app-header">
+      <div class="app-title">FlashMail.ai</div>
+      <div class="account-row">
+        <span id="account-email" class="muted"></span>
+        <button id="sign-out" class="link-button">Sign out</button>
+      </div>
+    </header>
+
+    <section id="formats-section">
+      <div class="section-title">
+        <span>Your formats</span>
+        <span id="formats-count" class="count-badge"></span>
+      </div>
+      <p id="formats-empty" class="muted hidden">No saved formats. Create one on the web dashboard.</p>
+      <div id="formats-list" class="formats-list"></div>
+    </section>
+
+    <section id="compose-section" class="hidden">
+      <button id="back-to-formats" class="link-button">&larr; Formats</button>
+      <div class="section-title">
+        <span id="compose-format-name"></span>
+        <span id="compose-mode-badge" class="mode-badge"></span>
+      </div>
+
+      <label for="tone-select">Tone</label>
+      <select id="tone-select"></select>
+
+      <label for="custom-inputs">Custom inputs</label>
+      <textarea id="custom-inputs" rows="4" placeholder="Any details the AI should include…"></textarea>
+      <div class="counter-row">
+        <span id="custom-word-count" class="muted"></span>
+      </div>
+
+      <p id="compose-error" class="error hidden"></p>
+      <button id="generate-button" class="primary" disabled>Generate</button>
+    </section>
+
+    <section id="result-section" class="hidden">
+      <button id="back-to-compose" class="link-button">&larr; Back</button>
+      <div class="section-title">
+        <span>Generated reply</span>
+      </div>
+      <textarea id="result-text" rows="10" readonly></textarea>
+      <div class="result-actions">
+        <button id="insert-button" class="primary">Insert into Gmail</button>
+        <button id="copy-button" class="secondary">Copy</button>
+        <button id="regenerate-button" class="link-button">Regenerate</button>
+      </div>
+      <p id="result-status" class="muted hidden"></p>
+    </section>
+  </div>
+
+  <script src="popup.js"></script>
 </body>
 </html>

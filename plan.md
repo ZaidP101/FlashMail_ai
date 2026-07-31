@@ -117,20 +117,20 @@ Later (admin/user dashboard): F11 placeholders, F12 analytics — **separate pla
 ## M5 — Extension: toolbar popup (apps/extension)
 
 ### M5.1 popup.html / popup.css
-- [ ] Views: login, format list, compose (custom inputs), loading/error states
-- [ ] Style consistent with Gmail toolbar look (match existing `.T-I` button styles)
+- [x] Views: login, format list, compose (custom inputs), loading/error states
+- [x] Style consistent with Gmail toolbar look (match existing `.T-I` button styles)
 
 ### M5.2 popup.js
-- [ ] On open: check/refresh token → login view or format list
-- [ ] `GET /api/formats` via background → render list (mode badge + tone dropdown default from format.tone)
-- [ ] Select format → custom inputs textarea (500-word counter)
-- [ ] Compose button → `generate` message → on reply, `insert-reply` to content script
-- [ ] Login form in popup → `login` message
-- [ ] Sign out button
+- [x] On open: check/refresh token → login view or format list
+- [x] `GET /api/formats` via background → render list (mode badge + tone dropdown default from format.tone)
+- [x] Select format → custom inputs textarea (500-word counter)
+- [x] Compose button → `generate` message → on reply, `insert-reply` to content script
+- [x] Login form in popup → `login` message
+- [x] Sign out button
 
 ### M5.3 Content script
-- [ ] Add `chrome.runtime.onMessage` handler for `insert-reply` (reuse existing insertText logic)
-- [ ] Add `get-email-content` responder (extract via existing selectors)
+- [x] Add `chrome.runtime.onMessage` handler for `insert-reply` (reuse existing insertText logic)
+- [x] Add `get-email-content` responder (extract via existing selectors)
 
 ### M5.4 Verification
 - [ ] Popup opens on any tab; full Flow B works; reply auto-inserts into Gmail compose
