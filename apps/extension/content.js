@@ -4,17 +4,6 @@ const TONES = [
   'Supportive', 'Empathetic', 'Sarcastic', 'Humorous',
 ]
 
-async function getApiConfig() {
-  return new Promise((resolve) => {
-    chrome.storage.sync.get(['apiUrl', 'authToken'], (result) => {
-      resolve({
-        apiUrl: result.apiUrl || 'http://localhost:8080',
-        authToken: result.authToken || '',
-      })
-    })
-  })
-}
-
 function getEmailContent() {
   const selectors = ['.h7', '.a3s.aiL', '[role="presentation"]', '.gmail_quote']
   for (const selector of selectors) {
@@ -76,6 +65,37 @@ function insertReply(reply) {
   return true
 }
 
+function sendToBackground(message) {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage(message, (response) => {
+      if (chrome.runtime.lastError) {
+        resolve({ ok: false, error: chrome.runtime.lastError.message })
+      } else {
+        resolve(response)
+      }
+    })
+  })
+}
+
+async function generateAndInsert(payload) {
+  const result = await sendToBackground({ type: 'generate', payload })
+  if (!result.ok) return result
+  const inserted = insertReply(result.reply)
+  return { ok: inserted, reply: result.reply }
+}
+
+async function polishReply() {
+  const emailContent = getEmailContent()
+  const replyContent = getReplyContent()
+  const toneSelector = document.querySelector('.tone-selector')
+  const tone = toneSelector ? toneSelector.value : ''
+
+  const payload = { emailContent, rawReply: replyContent }
+  if (tone) payload.tone = tone
+
+  return generateAndInsert(payload)
+}
+
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === 'insert-reply') {
     const inserted = insertReply(message.reply)
@@ -85,6 +105,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === 'get-email-content') {
     sendResponse({ ok: true, content: getEmailContent() })
     return
+  }
+  if (message.type === 'polish-reply') {
+    polishReply().then(sendResponse)
+    return true
   }
 })
 
@@ -106,28 +130,15 @@ async function injectButton() {
       button.innerHTML = 'Generating...'
       button.disabled = true
 
-      const { apiUrl, authToken } = await getApiConfig()
       const emailContent = getEmailContent()
       const replyContent = getReplyContent()
       const tone = document.querySelector('.tone-selector').value
 
-      const headers = { 'Content-Type': 'application/json' }
-      if (authToken) headers['Authorization'] = `Bearer ${authToken}`
+      const payload = { emailContent, rawReply: replyContent }
+      if (tone) payload.tone = tone
 
-      const response = await fetch(`${apiUrl}/api/email/generate`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          emailContent,
-          tone,
-          rawReply: replyContent,
-        }),
-      })
-
-      if (!response.ok) throw new Error('API request failed')
-
-      const reply = await response.text()
-      insertReply(reply)
+      const result = await generateAndInsert(payload)
+      if (!result.ok) throw new Error(result.error || 'API request failed')
     } catch (error) {
       console.error(error)
       alert(`Failed to generate reply: ${error.message}`)

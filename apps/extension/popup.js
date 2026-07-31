@@ -128,6 +128,11 @@ async function handleGenerate() {
   const customInputs = $('custom-inputs').value.trim()
   if (customInputs) payload.customInputs = customInputs
 
+  if (selectedFormat?.mode === 'reply') {
+    const email = await sendToContentScript({ type: 'get-email-content' })
+    if (email.ok && email.content) payload.emailContent = email.content
+  }
+
   $('generate-button').disabled = true
   $('generate-button').textContent = 'Generating…'
   $('compose-error').classList.add('hidden')
@@ -198,9 +203,30 @@ async function handleSignOut() {
   showView('view-login')
 }
 
+async function handlePolish() {
+  const status = $('polish-status')
+  $('polish-button').disabled = true
+  $('polish-button').textContent = 'Polishing…'
+  status.classList.add('hidden')
+
+  const result = await sendToContentScript({ type: 'polish-reply' })
+
+  if (result.ok) {
+    status.textContent = 'Polished reply inserted into the Gmail compose box.'
+    status.classList.remove('error')
+  } else {
+    status.textContent = 'Could not polish: open Gmail in this tab and start composing, then try again.'
+    status.classList.add('error')
+  }
+  status.classList.remove('hidden')
+  $('polish-button').textContent = 'Polish my draft'
+  $('polish-button').disabled = false
+}
+
 function wireEvents() {
   $('login-form').addEventListener('submit', handleLogin)
   $('sign-out').addEventListener('click', handleSignOut)
+  $('polish-button').addEventListener('click', handlePolish)
   $('custom-inputs').addEventListener('input', updateWordCounter)
   $('generate-button').addEventListener('click', handleGenerate)
   $('insert-button').addEventListener('click', handleInsert)

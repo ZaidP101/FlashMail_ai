@@ -60,8 +60,8 @@
 - [x] Content script: `get-email-content` responder
 
 ### M6 — Extension: reply mode + polish integration
-- [ ] Reply-mode formats fetch original email from Gmail
-- [ ] Polish flow wired to popup action
+- [x] Reply-mode formats fetch original email from Gmail
+- [x] Polish flow wired to popup action
 
 ### M7 — Verification
 - [ ] `bun install` + `turbo build` green

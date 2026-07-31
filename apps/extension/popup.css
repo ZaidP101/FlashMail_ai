@@ -164,6 +164,16 @@ button:disabled {
   text-decoration: underline;
 }
 
+/* polish */
+.polish-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
 /* formats list */
 .section-title {
   display: flex;

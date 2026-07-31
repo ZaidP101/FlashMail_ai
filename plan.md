@@ -140,9 +140,9 @@ Later (admin/user dashboard): F11 placeholders, F12 analytics — **separate pla
 
 ## M6 — Extension: reply mode + polish integration
 
-- [ ] For `mode: 'reply'`: popup requests `emailContent` from content script, includes in generate payload
-- [ ] Polish flow (`polish-reply`) wired to run from popup (optional action) and still available on compose toolbar
-- [ ] Manual test Flow C
+- [x] For `mode: 'reply'`: popup requests `emailContent` from content script, includes in generate payload
+- [x] Polish flow (`polish-reply`) wired to run from popup (optional action) and still available on compose toolbar
+- [x] Manual test Flow C
 - [ ] Commit: `feat(extension): support reply-mode formats and polish integration`
 
 ---
