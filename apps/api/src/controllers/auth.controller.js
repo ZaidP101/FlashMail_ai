@@ -20,6 +20,16 @@ export async function login(req, res, next) {
   }
 }
 
+export async function refresh(req, res, next) {
+  try {
+    const { refreshToken } = req.validatedBody
+    const result = await authService.refresh(refreshToken)
+    res.json(result)
+  } catch (err) {
+    res.status(401).json({ error: err.message })
+  }
+}
+
 export async function profile(req, res, next) {
   try {
     const user = await authService.getProfile(req.accessToken)

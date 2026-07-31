@@ -23,12 +23,16 @@
     "page": "options.html",
     "open_in_tab": true
   },
+  "background": {
+    "service_worker": "background.js"
+  },
   "icons": {
     "48": "icons/icon.svg",
     "128": "icons/icon.svg"
   },
   "action": {
     "default_title": "FlashMail.ai",
+    "default_popup": "popup.html",
     "default_icon": "icons/icon.svg"
   }
 }
