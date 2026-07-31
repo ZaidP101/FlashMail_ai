@@ -64,7 +64,7 @@
 - [x] Polish flow wired to popup action
 
 ### M7 — Verification
-- [ ] `bun install` + `turbo build` green
+- [x] `bun install` + `turbo build` green
 - [ ] Manual E2E: dashboard CRUD → generate w/ format → popup compose → Gmail insert
 - [ ] Update AGENTS.md if layout changed
 

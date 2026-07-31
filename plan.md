@@ -149,7 +149,7 @@ Later (admin/user dashboard): F11 placeholders, F12 analytics — **separate pla
 
 ## M7 — Verification + cleanup
 
-- [ ] Full `bun install` + `turbo build` green
+- [x] Full `bun install` + `turbo build` green
 - [ ] Manual end-to-end: web dashboard CRUD → generate with format → popup compose → Gmail insert
 - [ ] Update `AGENTS.md` if project layout changed
 - [ ] Final commit: `chore: phase complete`
