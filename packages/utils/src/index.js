@@ -1,1 +1,1 @@
-export { buildEmailPrompt } from './prompts.js'
+export { buildEmailPrompt, buildFormatPrompt } from './prompts.js'
