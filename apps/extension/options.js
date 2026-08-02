@@ -9,7 +9,7 @@ chrome.storage.sync.get(['apiUrl', 'authToken'], (result) => {
 })
 
 saveBtn.addEventListener('click', () => {
-  const apiUrl = apiUrlInput.value.trim() || 'http://localhost:8080'
+  const apiUrl = apiUrlInput.value.trim() || 'http://localhost:8081'
   const authToken = authTokenInput.value.trim()
 
   chrome.storage.sync.set({ apiUrl, authToken }, () => {

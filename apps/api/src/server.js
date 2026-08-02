@@ -7,7 +7,7 @@ import authRoutes from './routes/auth.routes.js'
 import formatRoutes from './routes/format.routes.js'
 
 const app = express()
-const PORT = process.env.PORT || 8080
+const PORT = process.env.PORT || 8081
 
 app.use(helmet())
 app.use(cors({ origin: '*' }))

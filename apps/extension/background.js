@@ -1,4 +1,4 @@
-const DEFAULT_API_URL = 'http://localhost:8080'
+const DEFAULT_API_URL = 'http://localhost:8081'
 
 function getApiUrl() {
   return new Promise((resolve) => {
