@@ -1,4 +1,4 @@
-import { generateReply, generateWithFormat } from '../services/huggingface.service.js'
+import { generateReply, generateWithFormat } from '../services/ai.service.js'
 
 function extractToken(req) {
   const authHeader = req.headers.authorization
@@ -8,19 +8,19 @@ function extractToken(req) {
 
 export async function generate(req, res, next) {
   try {
-    const { emailContent, tone, rawReply, formatId, customInputs } = req.validatedBody
+    const { emailContent, tone, rawReply, formatId, customInputs, senderName } = req.validatedBody
 
     if (formatId) {
       const accessToken = extractToken(req)
       if (!accessToken) return res.status(401).json({ error: 'Missing or invalid token' })
       const reply = await generateWithFormat(
-        { formatId, customInputs, tone, emailContent, rawReply },
+        { formatId, customInputs, tone, emailContent, rawReply, senderName },
         accessToken,
       )
       return res.json({ reply })
     }
 
-    const reply = await generateReply(emailContent, tone, rawReply)
+    const reply = await generateReply(emailContent, tone, rawReply, senderName)
     res.json({ reply })
   } catch (err) {
     if (err.message === 'Format not found') {
