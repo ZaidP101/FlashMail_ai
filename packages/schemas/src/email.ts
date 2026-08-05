@@ -6,6 +6,7 @@ export const EmailReqSchema = z.object({
   rawReply: z.string().optional(),
   formatId: z.string().uuid().optional(),
   customInputs: z.string().optional(),
+  senderName: z.string().optional(),
 })
 
 export const EmailResSchema = z.object({

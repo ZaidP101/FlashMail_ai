@@ -44,6 +44,11 @@ export function EmailForm() {
         rawReply: rawReply || undefined,
         formatId: formatId || undefined,
         customInputs: customInputs || undefined,
+        senderName:
+          session?.user?.user_metadata?.full_name ||
+          session?.user?.user_metadata?.name ||
+          session?.user?.email ||
+          undefined,
       }
       const { reply } = await generateEmail(payload, session?.access_token)
       setGeneratedReply(reply)

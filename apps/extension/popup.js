@@ -128,6 +128,9 @@ async function handleGenerate() {
   const customInputs = $('custom-inputs').value.trim()
   if (customInputs) payload.customInputs = customInputs
 
+  const stored = await chrome.storage.local.get(['email'])
+  if (stored.email) payload.senderName = stored.email
+
   if (selectedFormat?.mode === 'reply') {
     const email = await sendToContentScript({ type: 'get-email-content' })
     if (email.ok && email.content) payload.emailContent = email.content
