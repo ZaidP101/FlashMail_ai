@@ -5,6 +5,7 @@
   "description": "FlashMail.ai — AI-powered email reply assistant",
   "scripts": {
     "build": "turbo build",
+    "build:extension": "bun run apps/extension/scripts/build.mjs",
     "dev": "turbo dev",
     "dev:api": "turbo dev --filter=api",
     "dev:admin": "turbo dev --filter=admin",
