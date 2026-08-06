@@ -13,12 +13,13 @@ export type FormatItem = FormatOption & {
 
 type FormatListProps = {
   formats: FormatItem[]
+  onOpen: (id: string) => void
   onEdit: (id: string) => void
   onDuplicate: (id: string) => void
   onDelete: (id: string) => void
 }
 
-export function FormatList({ formats, onEdit, onDuplicate, onDelete }: FormatListProps) {
+export function FormatList({ formats, onOpen, onEdit, onDuplicate, onDelete }: FormatListProps) {
   if (formats.length === 0) {
     return <p className="text-sm text-muted-foreground py-8 text-center">No formats yet.</p>
   }
@@ -26,7 +27,19 @@ export function FormatList({ formats, onEdit, onDuplicate, onDelete }: FormatLis
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {formats.map((format) => (
-        <Card key={format.id}>
+        <Card
+          key={format.id}
+          role="button"
+          tabIndex={0}
+          className="cursor-pointer transition-colors hover:bg-accent"
+          onClick={() => onOpen(format.id)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              onOpen(format.id)
+            }
+          }}
+        >
           <CardContent className="p-4 space-y-3">
             <div className="flex items-start justify-between gap-2">
               <h3 className="font-semibold leading-tight">{format.name}</h3>
@@ -36,7 +49,11 @@ export function FormatList({ formats, onEdit, onDuplicate, onDelete }: FormatLis
               <span>Tone: {format.tone}</span>
               <span>{countWords(format.content)} words</span>
             </div>
-            <div className="flex gap-1 pt-1">
+            <div
+              className="flex gap-1 pt-1"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
+            >
               <Button variant="ghost" size="sm" onClick={() => onEdit(format.id)}>
                 <Pencil /> Edit
               </Button>

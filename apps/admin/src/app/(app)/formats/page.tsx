@@ -156,6 +156,7 @@ export default function FormatsPage() {
             </div>
             <FormatList
               formats={visible}
+              onOpen={(id) => router.push(`/formats/${id}`)}
               onEdit={(id) => router.push(`/formats/${id}`)}
               onDuplicate={handleDuplicate}
               onDelete={handleDelete}
