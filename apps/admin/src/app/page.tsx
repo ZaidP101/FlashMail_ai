@@ -30,7 +30,7 @@ export default function Home() {
       {!loading && user && (
         <div className="flex gap-4 mb-16">
           <Link href="/generate">
-            <Button size="lg">Generate a Reply</Button>
+            <Button size="lg" className="border-2 bg-foreground text-background hover:bg-foreground/90 rounded-full">Generate a Reply</Button>
           </Link>
         </div>
       )}
