@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { useAuth } from '@/contexts/auth-context'
 
 export function Navbar() {
@@ -31,6 +32,7 @@ export function Navbar() {
             Profile
           </Link>
           <span className="text-sm text-muted-foreground">{user?.email}</span>
+          <ThemeToggle />
           <Button variant="outline" size="sm" onClick={handleSignOut}>
             Sign Out
           </Button>
