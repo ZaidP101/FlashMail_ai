@@ -56,6 +56,14 @@ function getComposeBox() {
   return document.querySelector('[role="textbox"][g_editable="true"]')
 }
 
+function getSubjectBox() {
+  return (
+    document.querySelector('input[name="subjectbox"]') ||
+    document.querySelector('[aria-label="Subject"]') ||
+    document.querySelector('input[name="subject"]')
+  )
+}
+
 function insertReply(reply) {
   const composeBox = getComposeBox()
   if (!composeBox) return false
@@ -63,6 +71,24 @@ function insertReply(reply) {
   composeBox.focus()
   document.execCommand('insertText', false, reply)
   return true
+}
+
+function insertSubject(subject) {
+  const subjectBox = getSubjectBox()
+  if (!subjectBox || !subject) return false
+  const setter = Object.getOwnPropertyDescriptor(
+    window.HTMLInputElement.prototype,
+    'value'
+  ).set
+  setter.call(subjectBox, subject)
+  subjectBox.dispatchEvent(new Event('input', { bubbles: true }))
+  subjectBox.dispatchEvent(new Event('change', { bubbles: true }))
+  return true
+}
+
+function insertCompose(subject, reply) {
+  insertSubject(subject)
+  return insertReply(reply)
 }
 
 function sendToBackground(message) {
@@ -80,11 +106,14 @@ function sendToBackground(message) {
 async function generateAndInsert(payload) {
   const result = await sendToBackground({ type: 'generate', payload })
   if (!result.ok) return result
-  const inserted = insertReply(result.reply)
+  const inserted =
+    payload.mode === 'compose'
+      ? insertCompose(result.subject, result.reply)
+      : insertReply(result.reply)
   return { ok: inserted, reply: result.reply }
 }
 
-async function polishReply() {
+async function sendReply() {
   const emailContent = getEmailContent()
   const replyContent = getReplyContent()
   const toneSelector = document.querySelector('.tone-selector')
@@ -92,6 +121,44 @@ async function polishReply() {
 
   const payload = { emailContent, rawReply: replyContent }
   if (tone) payload.tone = tone
+
+  return generateAndInsert(payload)
+}
+
+async function sendCompose() {
+  const draft = getReplyContent()
+  const toneSelector = document.querySelector('.tone-selector')
+  const tone = toneSelector ? toneSelector.value : ''
+
+  const payload = { mode: 'compose', rawReply: draft }
+  if (tone) payload.tone = tone
+
+  return generateAndInsert(payload)
+}
+
+function getAccountEmail() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(['email'], (result) => resolve(result.email || ''))
+  })
+}
+
+async function polishReply() {
+  const hasReceivedEmail = Boolean(getEmailContent())
+  const replyContent = getReplyContent()
+  const toneSelector = document.querySelector('.tone-selector')
+  const tone = toneSelector ? toneSelector.value : ''
+  const senderName = await getAccountEmail()
+
+  if (!hasReceivedEmail) {
+    const payload = { mode: 'compose', rawReply: replyContent }
+    if (tone) payload.tone = tone
+    if (senderName) payload.senderName = senderName
+    return generateAndInsert(payload)
+  }
+
+  const payload = { emailContent: getEmailContent(), rawReply: replyContent }
+  if (tone) payload.tone = tone
+  if (senderName) payload.senderName = senderName
 
   return generateAndInsert(payload)
 }
@@ -133,9 +200,13 @@ async function injectButton() {
       const emailContent = getEmailContent()
       const replyContent = getReplyContent()
       const tone = document.querySelector('.tone-selector').value
+      const senderName = await getAccountEmail()
 
-      const payload = { emailContent, rawReply: replyContent }
+      const payload = !emailContent
+        ? { mode: 'compose', rawReply: replyContent }
+        : { emailContent, rawReply: replyContent }
       if (tone) payload.tone = tone
+      if (senderName) payload.senderName = senderName
 
       const result = await generateAndInsert(payload)
       if (!result.ok) throw new Error(result.error || 'API request failed')

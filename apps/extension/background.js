@@ -152,10 +152,13 @@ async function handleMessage(message) {
         return { ok: false, error: errMsg }
       }
       let reply = text
+      let subject = ''
       try {
-        reply = JSON.parse(text).reply
+        const parsed = JSON.parse(text)
+        reply = parsed.reply ?? reply
+        subject = parsed.subject ?? subject
       } catch { /* response was plain text */ }
-      return { ok: true, reply }
+      return { ok: true, reply, subject }
     }
 
     default:
