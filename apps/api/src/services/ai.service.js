@@ -1,4 +1,4 @@
-import { buildEmailPrompt, buildFormatPrompt } from '@flashmail/utils'
+import { buildEmailPrompt, buildFormatPrompt, buildComposePrompt } from '@flashmail/utils'
 import { createFormatQueries } from '@flashmail/models'
 import { createClient } from '@supabase/supabase-js'
 import { env } from '../config/env.js'
@@ -52,6 +52,18 @@ async function callAi(prompt) {
 export async function generateReply(emailContent, tone, rawReply, senderName) {
   const prompt = buildEmailPrompt(emailContent, tone, rawReply, senderName)
   return callAi(prompt)
+}
+
+export async function generateCompose(draft, tone, senderName) {
+  const output = await callAi(buildComposePrompt(draft, tone, senderName))
+  const match = output.match(/^Subject:\s*(.*)$/im)
+  let subject = ''
+  let body = output
+  if (match) {
+    subject = match[1].trim()
+    body = output.slice(match[0].length).replace(/^\n+/, '').trim()
+  }
+  return { subject, reply: body }
 }
 
 export async function generateWithFormat(

@@ -1,4 +1,4 @@
-const EXAMPLE = `Example
+const REPLY_EXAMPLE = `Example
 
 Email:
 Can you attend tomorrow?
@@ -12,7 +12,7 @@ Hi,
 Yes, I will be able to attend tomorrow.
 
 Regards,
-John`
+<name>`
 
 export function buildEmailPrompt(emailContent, tone, rawReply, senderName) {
   let prompt = 'You are FlashMail AI.\n'
@@ -24,7 +24,7 @@ export function buildEmailPrompt(emailContent, tone, rawReply, senderName) {
   prompt += 'Use active voice.\n'
   prompt += 'Expand rough notes into a natural email.\n'
   prompt += 'Output only the email.\n\n'
-  prompt += `${EXAMPLE}\n\n`
+  prompt += `${REPLY_EXAMPLE}\n\n`
 
   if (tone) {
     prompt += `Tone:\n${tone}\n\n`
@@ -33,9 +33,48 @@ export function buildEmailPrompt(emailContent, tone, rawReply, senderName) {
   prompt += `EMAIL RECEIVED:\n${emailContent}\n\n`
   prompt += `USER'S NOTES:\n${rawReply || '(no notes — write a brief professional reply)'}\n\n`
 
-  prompt += senderName
-    ? `Sign off with:\nRegards,\n${senderName}\n`
-    : 'Sign off with:\nRegards,\n'
+  prompt += 'Sign-off rules:\n'
+  prompt += '- If the received email addresses the user by name (e.g. "Hi Zaid" or "Dear Zaid Patel"), sign off with that name.\n'
+  if (senderName) {
+    prompt += `- Otherwise, sign off with the supplied name: ${senderName}.\n`
+  }
+  prompt += '- Otherwise, sign off with just: Regards,\n'
+  prompt += '- Do NOT invent a name that is not present in the email or supplied.\n\n'
+
+  prompt += 'Output:\n'
+
+  return prompt
+}
+
+export function buildComposePrompt(draft, tone, senderName) {
+  let prompt = 'You are FlashMail AI.\n'
+  prompt += '\nYou write professional emails on behalf of the user.\n'
+  prompt += '\n=========================\nTASK\n=========================\n\n'
+  prompt += 'Transform the user\'s rough draft into a complete, polished email.\n'
+  prompt += 'Expand incomplete thoughts while preserving the user\'s intent.\n'
+  prompt += 'Do not change the meaning.\n'
+  prompt += '\n=========================\nRULES\n=========================\n\n'
+  prompt += '- Write naturally.\n'
+  prompt += '- Improve grammar.\n'
+  prompt += '- Improve clarity.\n'
+  prompt += '- Improve sentence flow.\n'
+  prompt += '- Preserve names, dates and facts.\n'
+  prompt += '- Do not invent information.\n'
+  prompt += '- Keep the requested tone.\n'
+  prompt += '- Output only the email.\n'
+  prompt += '- Do not identify your changes.\n'
+  prompt += '\n=========================\nTONE\n=========================\n\n'
+  prompt += `${tone || 'Professional'}\n`
+  prompt += '\n=========================\nUSER DRAFT\n=========================\n\n'
+  prompt += `${draft}\n`
+  prompt += '\n=========================\nOUTPUT\n=========================\n\n'
+  prompt += 'Write the final email.\n'
+  prompt += 'Start with a line exactly like: Subject: <subject text>\n'
+  prompt += 'Then a blank line, then the email body.\n'
+
+  if (senderName) {
+    prompt += `\nSign off the email with:\nRegards,\n${senderName}\n`
+  }
 
   return prompt
 }

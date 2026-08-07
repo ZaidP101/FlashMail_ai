@@ -1,4 +1,4 @@
-import { generateReply, generateWithFormat } from '../services/ai.service.js'
+import { generateReply, generateWithFormat, generateCompose } from '../services/ai.service.js'
 
 function extractToken(req) {
   const authHeader = req.headers.authorization
@@ -8,7 +8,7 @@ function extractToken(req) {
 
 export async function generate(req, res, next) {
   try {
-    const { emailContent, tone, rawReply, formatId, customInputs, senderName } = req.validatedBody
+    const { emailContent, tone, rawReply, formatId, customInputs, senderName, mode } = req.validatedBody
 
     if (formatId) {
       const accessToken = extractToken(req)
@@ -18,6 +18,11 @@ export async function generate(req, res, next) {
         accessToken,
       )
       return res.json({ reply })
+    }
+
+    if (mode === 'compose') {
+      const result = await generateCompose(rawReply || emailContent, tone, senderName)
+      return res.json(result)
     }
 
     const reply = await generateReply(emailContent, tone, rawReply, senderName)
