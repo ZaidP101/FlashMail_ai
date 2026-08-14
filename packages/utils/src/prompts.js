@@ -108,6 +108,10 @@ export function buildFormatPrompt({ mode, content, customInputs, tone, emailCont
   prompt += '- Write from the user\'s perspective, using I, we, or the appropriate first-person form (a team or organisation may use "we").\n'
   prompt += '- Incorporate the custom inputs into the email.\n'
   prompt += `- Produce only the ${mode === 'email' ? 'email' : 'reply'} text.\n`
+  if (mode === 'email') {
+    prompt += '- Start with a line exactly like: Subject: <subject text>\n'
+    prompt += '- Then a blank line, then the email body.\n'
+  }
   if (mode === 'reply') {
     prompt += '- Reply to the sender directly and resolve their points; do NOT echo the original email back.\n'
   }

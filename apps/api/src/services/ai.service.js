@@ -83,5 +83,18 @@ export async function generateWithFormat(
     senderName,
   })
 
-  return callAi(prompt)
+  const output = await callAi(prompt)
+
+  if (format.mode === 'reply') {
+    return { subject: '', reply: output }
+  }
+
+  const match = output.match(/^Subject:\s*(.*)$/im)
+  let subject = ''
+  let body = output
+  if (match) {
+    subject = match[1].trim()
+    body = output.slice(match[0].length).replace(/^\n+/, '').trim()
+  }
+  return { subject, reply: body }
 }

@@ -13,11 +13,11 @@ export async function generate(req, res, next) {
     if (formatId) {
       const accessToken = extractToken(req)
       if (!accessToken) return res.status(401).json({ error: 'Missing or invalid token' })
-      const reply = await generateWithFormat(
+      const result = await generateWithFormat(
         { formatId, customInputs, tone, emailContent, rawReply, senderName },
         accessToken,
       )
-      return res.json({ reply })
+      return res.json(result)
     }
 
     if (mode === 'compose') {

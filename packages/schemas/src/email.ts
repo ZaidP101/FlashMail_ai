@@ -10,10 +10,16 @@ export const EmailReqSchema = z
     senderName: z.string().optional(),
     mode: z.enum(['reply', 'compose']).optional(),
   })
-  .refine((data) => data.mode === 'compose' || (data.emailContent && data.emailContent.length > 0), {
-    message: 'Email content is required',
-    path: ['emailContent'],
-  })
+  .refine(
+    (data) =>
+      data.mode === 'compose' ||
+      !!data.formatId ||
+      (data.emailContent && data.emailContent.length > 0),
+    {
+      message: 'Email content is required',
+      path: ['emailContent'],
+    },
+  )
 
 export const EmailResSchema = z.object({
   reply: z.string(),
