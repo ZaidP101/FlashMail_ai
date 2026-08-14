@@ -85,9 +85,11 @@ function renderFormats(formats) {
 }
 
 let selectedFormat = null
+let lastSubject = ''
 
 function openCompose(format) {
   selectedFormat = format
+  lastSubject = ''
   $('compose-format-name').textContent = format.name
   $('compose-mode-badge').textContent = format.mode
   populateTones($('tone-select'), format.tone)
@@ -143,6 +145,7 @@ async function handleGenerate() {
   const result = await sendMessage({ type: 'generate', payload })
 
   if (!result.ok) {
+    console.error('[generate] failed', { error: result.error, details: result.details })
     $('compose-error').textContent = result.error || 'Generation failed'
     $('compose-error').classList.remove('hidden')
     $('generate-button').textContent = 'Generate'
@@ -150,18 +153,26 @@ async function handleGenerate() {
     return
   }
 
+  lastSubject = result.subject || ''
   $('result-text').value = result.reply
-  $('result-status').textContent = ''
-  $('result-status').classList.add('hidden')
   $('compose-section').classList.add('hidden')
   $('result-section').classList.remove('hidden')
+
+  const status = $('result-status')
+  status.textContent = 'Generated. Click "Insert into Gmail" to inject into the compose box.'
+  status.classList.remove('error')
+  status.classList.remove('hidden')
 }
 
 async function handleInsert() {
   const reply = $('result-text').value
   if (!reply) return
 
-  const result = await sendToContentScript({ type: 'insert-reply', reply })
+  const result = await sendToContentScript({
+    type: 'insert-reply',
+    reply,
+    subject: lastSubject,
+  })
 
   const status = $('result-status')
   if (result.ok) {

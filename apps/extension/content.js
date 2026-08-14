@@ -17,9 +17,23 @@ function getReplyContent() {
   const selectors = ['.Am.aiL.editable']
   for (const selector of selectors) {
     const reply = document.querySelector(selector)
-    if (reply) return reply.innerText.trim()
+    if (reply) {
+      const clone = reply.cloneNode(true)
+      clone.querySelectorAll('.gmail_signature, [data-smartmail="gmail_signature"]').forEach((el) => el.remove())
+      return clone.innerText.trim()
+    }
   }
   return ''
+}
+
+function getSignatureElement() {
+  const composeBox = getComposeBox()
+  if (!composeBox) return null
+  return (
+    composeBox.querySelector('.gmail_signature') ||
+    composeBox.querySelector('[data-smartmail="gmail_signature"]') ||
+    null
+  )
 }
 
 function createToneSelector() {
@@ -53,37 +67,109 @@ function findComposeToolBar() {
 }
 
 function getComposeBox() {
-  return document.querySelector('[role="textbox"][g_editable="true"]')
+  const bodySelectors = [
+    'div[aria-label="Message Body"]',
+    '.Am.aiL.editable',
+    'div[role="textbox"][g_editable="true"]',
+  ]
+  for (const selector of bodySelectors) {
+    const matches = document.querySelectorAll(selector)
+    if (matches.length) {
+      const visible = [...matches].filter(
+        (el) => el.offsetParent !== null || el.getClientRects().length > 0,
+      )
+      const pool = visible.length ? visible : matches
+      return pool[pool.length - 1]
+    }
+  }
+  return null
 }
 
 function getSubjectBox() {
-  return (
-    document.querySelector('input[name="subjectbox"]') ||
-    document.querySelector('[aria-label="Subject"]') ||
-    document.querySelector('input[name="subject"]')
-  )
+  const subjectSelectors = [
+    'input[name="subjectbox"]',
+    'input.aoT[name="subjectbox"]',
+    'input[aria-label="Subject"]',
+    'input[name="subject"]',
+  ]
+  for (const selector of subjectSelectors) {
+    const match = document.querySelector(selector)
+    if (match) return match
+  }
+  return null
 }
 
 function insertReply(reply) {
   const composeBox = getComposeBox()
   if (!composeBox) return false
+
+  console.log(
+    '[insert] compose box →',
+    composeBox.className,
+    '| aria-label:',
+    composeBox.getAttribute('aria-label'),
+    '| id:',
+    composeBox.id,
+  )
+
+  const signature = getSignatureElement()
+  const signatureHtml = signature ? signature.outerHTML : ''
+
   composeBox.innerText = ''
   composeBox.focus()
+
+  const range = document.createRange()
+  range.selectNodeContents(composeBox)
+  range.collapse(false)
+  const selection = window.getSelection()
+  selection.removeAllRanges()
+  selection.addRange(range)
   document.execCommand('insertText', false, reply)
+
+  if (signatureHtml) {
+    const wrapper = document.createElement('div')
+    wrapper.innerHTML = signatureHtml
+    const restored = wrapper.firstChild
+    if (restored) composeBox.appendChild(restored)
+  }
+
   return true
 }
 
 function insertSubject(subject) {
   const subjectBox = getSubjectBox()
   if (!subjectBox || !subject) return false
+
+  console.log(
+    '[insert] subject box →',
+    subjectBox.className,
+    '| name:',
+    subjectBox.name,
+    '| id:',
+    subjectBox.id,
+  )
+
+  subjectBox.focus()
+
   const setter = Object.getOwnPropertyDescriptor(
     window.HTMLInputElement.prototype,
     'value'
   ).set
   setter.call(subjectBox, subject)
-  subjectBox.dispatchEvent(new Event('input', { bubbles: true }))
+  subjectBox.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: subject }))
   subjectBox.dispatchEvent(new Event('change', { bubbles: true }))
-  return true
+
+  if (subjectBox.value !== subject) {
+    const range = document.createRange()
+    range.selectNodeContents(subjectBox)
+    range.collapse(false)
+    const selection = window.getSelection()
+    selection.removeAllRanges()
+    selection.addRange(range)
+    document.execCommand('insertText', false, subject)
+  }
+
+  return subjectBox.value === subject
 }
 
 function insertCompose(subject, reply) {
@@ -165,8 +251,9 @@ async function polishReply() {
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === 'insert-reply') {
+    const subjectOk = message.subject ? insertSubject(message.subject) : true
     const inserted = insertReply(message.reply)
-    sendResponse({ ok: inserted })
+    sendResponse({ ok: inserted, subjectOk })
     return
   }
   if (message.type === 'get-email-content') {

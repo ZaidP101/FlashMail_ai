@@ -146,10 +146,14 @@ async function handleMessage(message) {
       const text = await response.text()
       if (!response.ok) {
         let errMsg = text
+        let details = null
         try {
-          errMsg = JSON.parse(text).error || text
+          const parsed = JSON.parse(text)
+          errMsg = parsed.error || text
+          details = parsed.details || null
         } catch { /* keep raw text */ }
-        return { ok: false, error: errMsg }
+        console.error('[generate] failed', { status: response.status, error: errMsg, details })
+        return { ok: false, error: errMsg, details }
       }
       let reply = text
       let subject = ''
