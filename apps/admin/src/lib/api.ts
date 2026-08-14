@@ -18,8 +18,22 @@ async function api<T>(path: string, token: string | undefined, init?: RequestIni
 
   const res = await fetch(path, { ...init, headers })
   if (!res.ok) {
-    const err = await res.text()
-    throw new Error(err || `Request failed: ${res.status}`)
+    const text = await res.text()
+    let message = text || `Request failed: ${res.status}`
+    try {
+      const parsed = JSON.parse(text)
+      if (parsed.error) {
+        message = parsed.error
+        if (parsed.details) {
+          const detailStr = JSON.stringify(parsed.details)
+          console.error(`[api] ${res.status} ${path}: ${parsed.error}`, parsed.details)
+          message = `${parsed.error}: ${detailStr}`
+        }
+      }
+    } catch {
+      /* keep raw text */
+    }
+    throw new Error(message)
   }
   if (res.status === 204) return undefined as T
   return res.json() as Promise<T>
