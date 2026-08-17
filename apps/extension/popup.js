@@ -210,6 +210,44 @@ async function handleLogin(event) {
   showView('view-main')
 }
 
+async function handleSignup(event) {
+  event.preventDefault()
+  const name = $('signup-name').value.trim()
+  const email = $('signup-email').value.trim()
+  const password = $('signup-password').value
+
+  $('signup-submit').disabled = true
+  $('signup-submit').textContent = 'Creating account…'
+  $('signup-error').classList.add('hidden')
+
+  const result = await sendMessage({ type: 'signup', email, password, name })
+
+  if (!result.ok) {
+    $('signup-error').textContent = result.error || 'Sign up failed'
+    $('signup-error').classList.remove('hidden')
+    $('signup-submit').textContent = 'Sign up'
+    $('signup-submit').disabled = false
+    return
+  }
+
+  showSignupSuccess()
+}
+
+function showSignup() {
+  $('login-error').classList.add('hidden')
+  $('signup-error').classList.add('hidden')
+  showView('view-signup')
+}
+
+function showSignupSuccess() {
+  showView('view-login')
+  $('login-error').textContent =
+    'Account created — check your email to confirm, then sign in.'
+  $('login-error').classList.remove('error')
+  $('login-error').classList.add('muted')
+  $('login-error').classList.remove('hidden')
+}
+
 async function handleSignOut() {
   await sendMessage({ type: 'logout' })
   $('login-email').value = ''
@@ -239,6 +277,9 @@ async function handlePolish() {
 
 function wireEvents() {
   $('login-form').addEventListener('submit', handleLogin)
+  $('signup-form').addEventListener('submit', handleSignup)
+  $('go-signup').addEventListener('click', showSignup)
+  $('go-login').addEventListener('click', () => showView('view-login'))
   $('sign-out').addEventListener('click', handleSignOut)
   $('polish-button').addEventListener('click', handlePolish)
   $('custom-inputs').addEventListener('input', updateWordCounter)

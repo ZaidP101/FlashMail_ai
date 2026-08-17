@@ -22,6 +22,23 @@
       <p id="login-error" class="error hidden"></p>
       <button type="submit" id="login-submit" class="primary">Sign in</button>
     </form>
+    <button id="go-signup" class="link-button">Don't have an account? Sign up</button>
+  </div>
+
+  <div id="view-signup" class="view hidden">
+    <h1>FlashMail.ai</h1>
+    <p class="muted">Create an account to get started.</p>
+    <form id="signup-form">
+      <label for="signup-name">Name</label>
+      <input id="signup-name" type="text" autocomplete="name">
+      <label for="signup-email">Email</label>
+      <input id="signup-email" type="email" autocomplete="username" required>
+      <label for="signup-password">Password</label>
+      <input id="signup-password" type="password" autocomplete="new-password" required minlength="6">
+      <p id="signup-error" class="error hidden"></p>
+      <button type="submit" id="signup-submit" class="primary">Sign up</button>
+    </form>
+    <button id="go-login" class="link-button">Already have an account? Sign in</button>
   </div>
 
   <div id="view-main" class="view hidden">

@@ -117,6 +117,24 @@ async function handleMessage(message) {
       return { ok: true, email: data.email }
     }
 
+    case 'signup': {
+      const apiUrl = await getApiUrl()
+      const response = await fetch(`${apiUrl}/api/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: message.email,
+          password: message.password,
+          name: message.name || undefined,
+        }),
+      })
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}))
+        return { ok: false, error: err.error || 'Sign up failed' }
+      }
+      return { ok: true }
+    }
+
     case 'logout': {
       await clearTokens()
       return { ok: true }
