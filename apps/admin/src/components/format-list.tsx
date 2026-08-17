@@ -1,6 +1,6 @@
 'use client'
 
-import { Pencil, Copy, Trash2 } from 'lucide-react'
+import { Pencil, Copy, Trash2, Square, CheckSquare } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -13,25 +13,37 @@ export type FormatItem = FormatOption & {
 
 type FormatListProps = {
   formats: FormatItem[]
+  selectedIds?: string[]
+  onToggleSelect?: (id: string) => void
   onOpen: (id: string) => void
   onEdit: (id: string) => void
   onDuplicate: (id: string) => void
   onDelete: (id: string) => void
 }
 
-export function FormatList({ formats, onOpen, onEdit, onDuplicate, onDelete }: FormatListProps) {
+export function FormatList({
+  formats,
+  selectedIds = [],
+  onToggleSelect,
+  onOpen,
+  onEdit,
+  onDuplicate,
+  onDelete,
+}: FormatListProps) {
   if (formats.length === 0) {
     return <p className="text-sm text-muted-foreground py-8 text-center">No formats yet.</p>
   }
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {formats.map((format) => (
+      {formats.map((format) => {
+        const selected = selectedIds.includes(format.id)
+        return (
         <Card
           key={format.id}
           role="button"
           tabIndex={0}
-          className="cursor-pointer transition-colors hover:bg-accent"
+          className={selected ? 'cursor-pointer ring-2 ring-primary/60' : 'cursor-pointer transition-colors hover:bg-accent'}
           onClick={() => onOpen(format.id)}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -43,7 +55,19 @@ export function FormatList({ formats, onOpen, onEdit, onDuplicate, onDelete }: F
           <CardContent className="p-4 space-y-3">
             <div className="flex items-start justify-between gap-2">
               <h3 className="font-semibold leading-tight">{format.name}</h3>
-              <Badge variant={format.mode === 'email' ? 'default' : 'secondary'}>{format.mode}</Badge>
+              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                {onToggleSelect && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-label={selected ? 'Deselect' : 'Select'}
+                    onClick={() => onToggleSelect(format.id)}
+                  >
+                    {selected ? <CheckSquare className="text-primary" /> : <Square />}
+                  </Button>
+                )}
+                <Badge variant={format.mode === 'email' ? 'default' : 'secondary'}>{format.mode}</Badge>
+              </div>
             </div>
             <div className="flex items-center gap-3 text-xs text-muted-foreground">
               <span>Tone: {format.tone}</span>
@@ -66,7 +90,8 @@ export function FormatList({ formats, onOpen, onEdit, onDuplicate, onDelete }: F
             </div>
           </CardContent>
         </Card>
-      ))}
+        )
+      })}
     </div>
   )
 }

@@ -21,12 +21,14 @@ export default function FormatsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<ModeFilter>('all')
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
 
   const load = async () => {
     setLoading(true)
     try {
       const data = await getFormats(session?.access_token)
       setFormats(data)
+      setSelectedIds([])
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to load formats')
     } finally {
@@ -73,8 +75,19 @@ export default function FormatsPage() {
     }
   }
 
+  const handleToggleSelect = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    )
+  }
+
   const handleExport = () => {
-    const blob = new Blob([JSON.stringify(formats, null, 2)], { type: 'application/json' })
+    const toExport = formats.filter((f) => selectedIds.includes(f.id))
+    if (toExport.length === 0) {
+      toast.error('Select a format first to export')
+      return
+    }
+    const blob = new Blob([JSON.stringify(toExport, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -111,8 +124,8 @@ export default function FormatsPage() {
               <CardDescription>Reusable templates for AI-generated emails and replies.</CardDescription>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={handleExport} disabled={formats.length === 0}>
-                <Download /> Export
+              <Button variant="outline" size="sm" onClick={handleExport}>
+                <Download /> Export{selectedIds.length > 0 ? ` (${selectedIds.length})` : ''}
               </Button>
               <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
                 <Upload /> Import
@@ -148,6 +161,7 @@ export default function FormatsPage() {
                     variant={filter === m ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setFilter(m)}
+                    className={filter === m ? 'bg-primary text-primary-foreground ring-2 ring-primary/40 shadow' : ''}
                   >
                     {m === 'all' ? 'All' : m === 'email' ? 'Email' : 'Reply'}
                   </Button>
@@ -156,6 +170,8 @@ export default function FormatsPage() {
             </div>
             <FormatList
               formats={visible}
+              selectedIds={selectedIds}
+              onToggleSelect={handleToggleSelect}
               onOpen={(id) => router.push(`/formats/${id}`)}
               onEdit={(id) => router.push(`/formats/${id}`)}
               onDuplicate={handleDuplicate}

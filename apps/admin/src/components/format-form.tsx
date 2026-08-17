@@ -61,6 +61,10 @@ export function FormatForm({ initial, submitLabel, onSubmit, loading }: FormatFo
               variant={mode === m ? 'default' : 'outline'}
               size="sm"
               onClick={() => setMode(m)}
+              className={cn(
+                mode === m &&
+                  'bg-primary text-primary-foreground shadow ring-2 ring-primary/40',
+              )}
             >
               {m === 'email' ? 'Email' : 'Reply'}
             </Button>
