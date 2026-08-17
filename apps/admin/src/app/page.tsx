@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useAuth } from '@/contexts/auth-context'
+import { Navbar } from '@/components/navbar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Sparkles, Mail, Chrome } from 'lucide-react'
@@ -10,7 +11,9 @@ export default function Home() {
   const { user, loading } = useAuth()
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8">
+    <main className="min-h-screen">
+      <Navbar />
+      <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center p-8">
       <div className="mb-12 text-center">
         <h1 className="text-5xl font-bold mb-4">FlashMail.ai</h1>
         <p className="text-xl text-muted-foreground">AI-powered email reply assistant</p>
@@ -57,6 +60,7 @@ export default function Home() {
             <CardDescription>Use directly from Gmail with our Chrome extension. AI reply button in the compose toolbar.</CardDescription>
           </CardHeader>
         </Card>
+      </div>
       </div>
     </main>
   )

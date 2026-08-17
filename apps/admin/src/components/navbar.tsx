@@ -22,6 +22,9 @@ export function Navbar() {
           FlashMail.ai
         </Link>
         <nav className="flex items-center gap-4">
+          <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Home
+          </Link>
           <Link href="/generate" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Generate
           </Link>
@@ -31,11 +34,25 @@ export function Navbar() {
           <Link href="/profile" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Profile
           </Link>
-          <span className="text-sm text-muted-foreground">{user?.email}</span>
-          <ThemeToggle />
-          <Button variant="outline" size="sm" onClick={handleSignOut}>
-            Sign Out
-          </Button>
+          {user ? (
+            <>
+              <span className="text-sm text-muted-foreground">{user.email}</span>
+              <ThemeToggle />
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <ThemeToggle />
+              <Button variant="outline" size="sm">
+                <Link href="/signup">Sign up</Link>
+              </Button>
+              <Button size="sm">
+                <Link href="/login">Sign in</Link>
+              </Button>
+            </>
+          )}
         </nav>
       </div>
     </header>
