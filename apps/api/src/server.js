@@ -10,7 +10,12 @@ const app = express()
 const PORT = process.env.PORT || 8081
 
 app.use(helmet())
-app.use(cors({ origin: '*' }))
+const corsOrigin = process.env.CORS_ORIGIN
+app.use(
+  cors({
+    origin: corsOrigin ? corsOrigin.split(',').map((o) => o.trim()) : '*',
+  }),
+)
 app.use(express.json())
 
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }))
