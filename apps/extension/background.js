@@ -1,4 +1,4 @@
-const DEFAULT_API_URL = 'http://localhost:8081'
+const DEFAULT_API_URL = 'https://api.zaidp101.tech'
 
 function getApiUrl() {
   return new Promise((resolve) => {
