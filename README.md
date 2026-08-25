@@ -2,7 +2,7 @@
 
 **AI-powered email reply assistant** — draft, polish, and insert professional emails from Gmail or your browser in seconds.
 
-FlashMail.ai combines a Next.js admin dashboard, an Express API that talks to Groq's `llama-3.3-70b-versatile` model, and a Chrome/Firefox extension that lives inside the Gmail compose window. Pick a tone or a saved format, get a draft, and inject it straight into your email — signature preserved.
+FlashMail.ai combines a Next.js admin dashboard, an Express API that talks to Groq's `openai/gpt-oss-120b` model, and a Chrome/Firefox extension that lives inside the Gmail compose window. Pick a tone or a saved format, get a draft, and inject it straight into your email — signature preserved.
 
 ---
 
@@ -54,8 +54,8 @@ FlashMail.ai combines a Next.js admin dashboard, an Express API that talks to Gr
        ▼                                  ▼
 ┌──────────────┐                 ┌─────────────────────────────┐
 │  Groq API    │                 │  Supabase (PostgreSQL+Auth) │
-│ llama-3.3-   │                 │  auth.users → formats table │
-│ 70b-versatile│                 │  RLS: each user owns rows   │
+│ openai/gpt-  │                 │  auth.users → formats table │
+│ oss-120b     │                 │  RLS: each user owns rows   │
 └──────────────┘                 └─────────────────────────────┘
 ```
 
@@ -273,7 +273,7 @@ Run the SQL files in `apps/api/migrations/` in order in the Supabase **SQL Edito
 | Variable | Used by | Purpose |
 |---|---|---|
 | `GROQ_API_KEY` | API | Groq API key (required). |
-| `AI_MODEL` | API | Optional model override (default `llama-3.3-70b-versatile`). |
+| `AI_MODEL` | API | Optional model override (default `openai/gpt-oss-120b`). |
 | `SUPABASE_URL` | API | Supabase project URL. |
 | `SUPABASE_ANON_KEY` | API | Anon key for the Admin SDK / RLS-scoped client. |
 | `SUPABASE_SERVICE_KEY` | API | Service key for privileged operations. |
@@ -333,7 +333,7 @@ On any new signup it inserts three per-user copies — `Formal Reply`, `Casual R
 |---|---|
 | Backend | Express 5, Zod, Supabase Admin SDK |
 | Frontend | Next.js (App Router), shadcn/ui, lucide-react, sonner, next-themes |
-| AI | Groq Inference API (`llama-3.3-70b-versatile`, overridable via `AI_MODEL`) |
+| AI | Groq Inference API (`openai/gpt-oss-120b`, overridable via `AI_MODEL`) |
 | Auth/DB | Supabase (PostgreSQL + Auth + RLS) |
 | Extension | Chrome MV3 / Firefox WebExtension, vanilla JS content scripts |
 | Tooling | Bun, Turborepo, TypeScript, Prettier |

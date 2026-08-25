@@ -8,7 +8,7 @@ import { createClient } from "@supabase/supabase-js";
 import { env } from "../config/env.js";
 
 const AI_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const DEFAULT_MODEL = "llama-3.3-70b-versatile";
+const DEFAULT_MODEL = "openai/gpt-oss-120b";
 
 function getUserIdFromToken(accessToken) {
   try {
