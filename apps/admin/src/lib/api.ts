@@ -1,5 +1,5 @@
-import type { z } from 'zod'
 import type { EmailReqSchema, EmailResSchema, FormatSchema } from '@flashmail/schemas'
+import type { z } from 'zod'
 
 type EmailReq = z.input<typeof EmailReqSchema>
 type EmailRes = z.input<typeof EmailResSchema>
