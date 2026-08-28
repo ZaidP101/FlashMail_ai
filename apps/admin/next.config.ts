@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.API_URL || 'http://localhost:8081'}/api/:path*`,
+        destination: `${process.env.API_URL || 'https://api.zaidp101.tech'}/api/:path*`
       },
     ]
   },
