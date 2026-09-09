@@ -5,6 +5,7 @@ import { errorHandler } from './middleware/index.js'
 import emailRoutes from './routes/email.routes.js'
 import authRoutes from './routes/auth.routes.js'
 import formatRoutes from './routes/format.routes.js'
+import { startKeepalive } from './services/keepalive.service.js'
 
 const app = express()
 const PORT = process.env.PORT || 8081
@@ -24,6 +25,8 @@ app.use('/api/auth', authRoutes)
 app.use('/api/formats', formatRoutes)
 
 app.use(errorHandler)
+
+startKeepalive()
 
 app.listen(PORT, () => {
   console.log(` API server running on port ${PORT}`)
